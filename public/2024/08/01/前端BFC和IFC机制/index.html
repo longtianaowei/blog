@@ -1,0 +1,170 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>前端BFC和IFC机制 | longtian</title><meta name="author" content="longtian"><meta name="copyright" content="longtian"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="前端BFC和IFC机制BFC（Block Formatting Context，块级格式化上下文）BFC就像一个有魔法的盒子，它可以把里面的东西（其他盒子）整理得整整齐齐，并且有一些特别的规则：  盒子不会跑出去：魔法盒子里的东西不会跑到外面去，外面的东西也不会跑进来。 盒子会变高：魔法盒子会自动变高，以便把所有东西都装进去，哪怕是浮起来的东西（浮动元素）。 盒子们紧紧靠在一起：魔法盒子里的东西会">
+<meta property="og:type" content="article">
+<meta property="og:title" content="前端BFC和IFC机制">
+<meta property="og:url" content="http://blog.shanganma.com/2024/08/01/%E5%89%8D%E7%AB%AFBFC%E5%92%8CIFC%E6%9C%BA%E5%88%B6/index.html">
+<meta property="og:site_name" content="longtian">
+<meta property="og:description" content="前端BFC和IFC机制BFC（Block Formatting Context，块级格式化上下文）BFC就像一个有魔法的盒子，它可以把里面的东西（其他盒子）整理得整整齐齐，并且有一些特别的规则：  盒子不会跑出去：魔法盒子里的东西不会跑到外面去，外面的东西也不会跑进来。 盒子会变高：魔法盒子会自动变高，以便把所有东西都装进去，哪怕是浮起来的东西（浮动元素）。 盒子们紧紧靠在一起：魔法盒子里的东西会">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jsd.012700.xyz/gh/jerryc127/CDN@latest/cover/default_bg3.png">
+<meta property="article:published_time" content="2024-08-01T06:37:00.000Z">
+<meta property="article:modified_time" content="2024-08-01T06:37:36.281Z">
+<meta property="article:author" content="longtian">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jsd.012700.xyz/gh/jerryc127/CDN@latest/cover/default_bg3.png"><link rel="shortcut icon" href="http://www.damaomao.net/favicon.ico"><link rel="canonical" href="http://blog.shanganma.com/2024/08/01/%E5%89%8D%E7%AB%AFBFC%E5%92%8CIFC%E6%9C%BA%E5%88%B6/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":230},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '前端BFC和IFC机制',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-08-01 14:37:36'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="http://www.damaomao.net/favicon.ico" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">21</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 文章归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 类别</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 娱乐</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于作者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://jsd.012700.xyz/gh/jerryc127/CDN@latest/cover/default_bg3.png')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">longtian</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 文章归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 类别</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 娱乐</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于作者</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">前端BFC和IFC机制</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-08-01T06:37:00.000Z" title="发表于 2024-08-01 14:37:00">2024-08-01</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-08-01T06:37:36.281Z" title="更新于 2024-08-01 14:37:36">2024-08-01</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="前端BFC和IFC机制"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="前端BFC和IFC机制"><a href="#前端BFC和IFC机制" class="headerlink" title="前端BFC和IFC机制"></a>前端BFC和IFC机制</h1><h3 id="BFC（Block-Formatting-Context，块级格式化上下文）"><a href="#BFC（Block-Formatting-Context，块级格式化上下文）" class="headerlink" title="BFC（Block Formatting Context，块级格式化上下文）"></a>BFC（Block Formatting Context，块级格式化上下文）</h3><p><strong>BFC就像一个有魔法的盒子</strong>，它可以把里面的东西（其他盒子）整理得整整齐齐，并且有一些特别的规则：</p>
+<ol>
+<li><strong>盒子不会跑出去</strong>：魔法盒子里的东西不会跑到外面去，外面的东西也不会跑进来。</li>
+<li><strong>盒子会变高</strong>：魔法盒子会自动变高，以便把所有东西都装进去，哪怕是浮起来的东西（浮动元素）。</li>
+<li><strong>盒子们紧紧靠在一起</strong>：魔法盒子里的东西会紧紧地排列在一起，不会有多余的空隙。</li>
+</ol>
+<p><strong>什么时候会有魔法盒子（BFC）呢？</strong></p>
+<ul>
+<li>当我们给盒子加上<code>float</code>属性时，它会变成魔法盒子。</li>
+<li>当我们给盒子加上<code>position: absolute</code>或<code>fixed</code>属性时，它也会变成魔法盒子。</li>
+<li>当我们给盒子加上<code>display: inline-block</code>、<code>table</code>等属性时，它会变成魔法盒子。</li>
+<li>当我们给盒子加上<code>overflow</code>属性，比如<code>hidden</code>，它也会变成魔法盒子。</li>
+</ul>
+<h3 id="IFC（Inline-Formatting-Context，内联格式化上下文）"><a href="#IFC（Inline-Formatting-Context，内联格式化上下文）" class="headerlink" title="IFC（Inline Formatting Context，内联格式化上下文）"></a>IFC（Inline Formatting Context，内联格式化上下文）</h3><p><strong>IFC就像我们写字时的一行行文字</strong>，这些文字（内联元素）会整齐地排在一起。</p>
+<ol>
+<li><strong>一行排开</strong>：IFC里的东西会一个接一个地排成一行。</li>
+<li><strong>行高决定高度</strong>：这些东西的高度是由行高（line-height）决定的。</li>
+<li><strong>可以换行</strong>：如果一行放不下了，它们会自动换到下一行。</li>
+</ol>
+<p><strong>什么时候会有IFC呢？</strong></p>
+<ul>
+<li>当我们用<code>&lt;span&gt;</code>或<code>&lt;a&gt;</code>这些内联标签时，它们会自动变成IFC。</li>
+<li>当我们把盒子的<code>display</code>属性设置为<code>inline</code>或<code>inline-block</code>时，它们也会变成IFC。</li>
+</ul>
+<h3 id="举个例子"><a href="#举个例子" class="headerlink" title="举个例子"></a>举个例子</h3><p><strong>BFC就像一个整理箱</strong>，你可以把很多玩具放进去，这个箱子会帮你把玩具整理得很整齐，玩具不会跑到箱子外面去，箱子也会变高来装下所有的玩具。</p>
+<p><strong>IFC就像我们排队写字</strong>，每个字都会排成一行，如果一行写满了，就会自动换到下一行。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://blog.shanganma.com">longtian</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://blog.shanganma.com/2024/08/01/%E5%89%8D%E7%AB%AFBFC%E5%92%8CIFC%E6%9C%BA%E5%88%B6/">http://blog.shanganma.com/2024/08/01/%E5%89%8D%E7%AB%AFBFC%E5%92%8CIFC%E6%9C%BA%E5%88%B6/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://blog.shanganma.com" target="_blank">longtian</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="https://jsd.012700.xyz/gh/jerryc127/CDN@latest/cover/default_bg3.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2024/10/23/javascript%E4%B8%ADindexof%E7%9A%84%E7%94%A8%E6%B3%95/"><img class="prev-cover" src="https://jsd.012700.xyz/gh/jerryc127/CDN@latest/cover/default_bg2.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">javascript中indexof的用法</div></div></a></div><div class="next-post pull-right"><a href="/2024/07/31/%E9%97%AD%E5%8C%85/"><img class="next-cover" src="https://jsd.012700.xyz/gh/jerryc127/CDN@latest/cover/default_bg.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">闭包</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="http://www.damaomao.net/favicon.ico" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">longtian</div><div class="author-info__description">醒了</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">21</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/longtianaowei"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/longtianaowei" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:longtianaw@163.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E7%AB%AFBFC%E5%92%8CIFC%E6%9C%BA%E5%88%B6"><span class="toc-number">1.</span> <span class="toc-text">前端BFC和IFC机制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#BFC%EF%BC%88Block-Formatting-Context%EF%BC%8C%E5%9D%97%E7%BA%A7%E6%A0%BC%E5%BC%8F%E5%8C%96%E4%B8%8A%E4%B8%8B%E6%96%87%EF%BC%89"><span class="toc-number">1.0.1.</span> <span class="toc-text">BFC（Block Formatting Context，块级格式化上下文）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IFC%EF%BC%88Inline-Formatting-Context%EF%BC%8C%E5%86%85%E8%81%94%E6%A0%BC%E5%BC%8F%E5%8C%96%E4%B8%8A%E4%B8%8B%E6%96%87%EF%BC%89"><span class="toc-number">1.0.2.</span> <span class="toc-text">IFC（Inline Formatting Context，内联格式化上下文）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BE%E4%B8%AA%E4%BE%8B%E5%AD%90"><span class="toc-number">1.0.3.</span> <span class="toc-text">举个例子</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2024/10/23/javascript%E4%B8%ADsubstring%E7%9A%84%E7%94%A8%E6%B3%95/" title="javascript中substring的用法"><img src="https://jsd.012700.xyz/gh/jerryc127/CDN@latest/cover/default_bg2.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="javascript中substring的用法"/></a><div class="content"><a class="title" href="/2024/10/23/javascript%E4%B8%ADsubstring%E7%9A%84%E7%94%A8%E6%B3%95/" title="javascript中substring的用法">javascript中substring的用法</a><time datetime="2024-10-23T03:31:46.000Z" title="发表于 2024-10-23 11:31:46">2024-10-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/10/23/javascript%E4%B8%ADindexof%E7%9A%84%E7%94%A8%E6%B3%95/" title="javascript中indexof的用法"><img src="https://jsd.012700.xyz/gh/jerryc127/CDN@latest/cover/default_bg2.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="javascript中indexof的用法"/></a><div class="content"><a class="title" href="/2024/10/23/javascript%E4%B8%ADindexof%E7%9A%84%E7%94%A8%E6%B3%95/" title="javascript中indexof的用法">javascript中indexof的用法</a><time datetime="2024-10-23T03:31:09.000Z" title="发表于 2024-10-23 11:31:09">2024-10-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/08/01/%E5%89%8D%E7%AB%AFBFC%E5%92%8CIFC%E6%9C%BA%E5%88%B6/" title="前端BFC和IFC机制"><img src="https://jsd.012700.xyz/gh/jerryc127/CDN@latest/cover/default_bg3.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="前端BFC和IFC机制"/></a><div class="content"><a class="title" href="/2024/08/01/%E5%89%8D%E7%AB%AFBFC%E5%92%8CIFC%E6%9C%BA%E5%88%B6/" title="前端BFC和IFC机制">前端BFC和IFC机制</a><time datetime="2024-08-01T06:37:00.000Z" title="发表于 2024-08-01 14:37:00">2024-08-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/07/31/%E9%97%AD%E5%8C%85/" title="闭包"><img src="https://jsd.012700.xyz/gh/jerryc127/CDN@latest/cover/default_bg.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="闭包"/></a><div class="content"><a class="title" href="/2024/07/31/%E9%97%AD%E5%8C%85/" title="闭包">闭包</a><time datetime="2024-07-31T06:28:35.000Z" title="发表于 2024-07-31 14:28:35">2024-07-31</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/07/30/%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0%E4%B8%AD%E7%9A%84this%E6%8C%87%E5%90%91%E9%97%AE%E9%A2%98/" title="箭头函数中的this指向问题"><img src="https://jsd.012700.xyz/gh/jerryc127/CDN@latest/cover/default_bg3.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="箭头函数中的this指向问题"/></a><div class="content"><a class="title" href="/2024/07/30/%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0%E4%B8%AD%E7%9A%84this%E6%8C%87%E5%90%91%E9%97%AE%E9%A2%98/" title="箭头函数中的this指向问题">箭头函数中的this指向问题</a><time datetime="2024-07-30T03:18:24.000Z" title="发表于 2024-07-30 11:18:24">2024-07-30</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By longtian</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
